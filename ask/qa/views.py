@@ -31,7 +31,7 @@ def paginate(request, qs):
 
 @require_GET
 def index(request):
-    qs = Question.objects.all.order_by('-id')
+    qs = Question.objects.all().order_by('-id')
     paginator, page = paginate(request, qs)
     paginator.baseurl = reverse('index') + '?page='
     return render(request, 'index.html', {
@@ -42,7 +42,7 @@ def index(request):
 
 @require_GET
 def popular(request):
-    qs = Question.objects.all.order_by('-rating')
+    qs = Question.objects.all().order_by('-rating')
     paginator, page = paginate(request, qs)
     paginator.baseurl = reverse('popular') + '?page='
     return render(request, 'popular.html', {
