@@ -19,6 +19,14 @@ class AnswerForm(forms.Form):
     text = forms.CharField(widget=forms.Textarea)
     question = forms.IntegerField(widget=forms.HiddenInput)
 
+    def clean_question(self):
+        try:
+            question = int(self.cleaned_data['question'])
+        except ValueError:
+            raise forms.ValidationError('Invalid data',
+                                        code='validation_error')
+        return question
+
     def clean(self):
         return self.cleaned_data
 
