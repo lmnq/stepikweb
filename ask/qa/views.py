@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_GET
 from qa.models import Answer, Question
 from django.http import HttpResponse
+
+
 def test(request, *args, **kwargs):
     return HttpResponse('OK')
 
@@ -60,4 +62,32 @@ def question_details(request, id):
         'answers': answers,
         })
 
+@require_get
+def ask(request):
+    if request.method == "Post":
+        form = AskForm(request.Post)
+        if form.is_valid():
+            form._user = request.user
+            question = form.save()
+            url = question.get_url()
+            return HttpResponseRedirect(url)
+    else:
+        form = AskForm()
+    return render(request, 'ask_form.html', {
+        'form': form,
+        })
 
+@require_GET
+def answer(request):
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            form._user = request.user
+            q_answer = form.save()
+            url = q_answer.get_url()
+            return HttpResponseRedirect(url)
+    else:
+        form = AnswerForm(initial={'question': q.id})
+    return render(request, 'answer_form.html', {
+        'form': form,
+        })
