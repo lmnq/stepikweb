@@ -62,7 +62,6 @@ def question_details(request, id):
         'answers': answers,
         })
 
-@require_GET
 def ask(request):
     if request.method == "Post":
         form = AskForm(request.Post)
@@ -77,7 +76,6 @@ def ask(request):
         'form': form,
         })
 
-@require_GET
 def answer(request):
     if request.method == 'POST':
         form = AnswerForm(request.POST)
