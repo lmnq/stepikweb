@@ -64,8 +64,8 @@ def question_details(request, id):
         })
 
 def ask(request):
-    if request.method == "Post":
-        form = AskForm(request.Post)
+    if request.method == "POST":
+        form = AskForm(request.POST)
         if form.is_valid():
             form._user = request.user
             question = form.save()
