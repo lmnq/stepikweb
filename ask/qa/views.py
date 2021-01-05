@@ -4,6 +4,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_GET
 from qa.models import Answer, Question
+from qa.forms import AskForm, AnswerForm
 from django.http import HttpResponse
 
 
