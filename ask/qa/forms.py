@@ -6,6 +6,10 @@ class AskForm(forms.Form):
     title = forms.CharField(max_length=100)
     text = forms.CharField(widget=forms.Textarea)
 
+    def __init__(self, user, *args, **kwargs):
+	self._user = user
+	super(AskForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         return self.cleaned_data
 

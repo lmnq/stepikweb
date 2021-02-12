@@ -6,7 +6,7 @@ from django.views.decorators.http import require_GET
 from qa.models import Answer, Question
 from qa.forms import AskForm, AnswerForm
 from django.http import HttpResponse
-
+from django.contrib.auth.decorators import login_required
 
 def test(request, *args, **kwargs):
     return HttpResponse('OK')
@@ -62,12 +62,11 @@ def question_details(request, id):
         'question': question,
         'answers': answers,
         })
-
+@login_required
 def ask(request):
     if request.method == "POST":
-        form = AskForm(request.POST)
+        form = AskForm(request.user, request.POST)
         if form.is_valid():
-            form._user = request.user
             question = form.save()
             url = "/question/{}/".format(question.id)
             return HttpResponseRedirect(url)
