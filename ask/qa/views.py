@@ -54,18 +54,18 @@ def popular(request):
         'page': page,
         })
 
-@require_GET
-def question_details(request, id):
+def question_det(request, id):
     question = get_object_or_404(Question, id=id)
     answers = question.answer_set.all()
     return render(request, 'question_details.html', {
         'question': question,
         'answers': answers,
         })
+
 @login_required
 def ask(request):
     if request.method == "POST":
-        form = AskForm(request.user, request.POST)
+        form = AskForm(request.POST)
         if form.is_valid():
             question = form.save()
             url = question.get_url()
@@ -80,7 +80,6 @@ def answer(request):
     if request.method == "POST":
         form = AnswerForm(request.POST)
         if form.is_valid():
-            form._user = request.user
             q_answer = form.save()
             url = q_answer.get_url()
             return HttpResponseRedirect(url)
@@ -88,4 +87,23 @@ def answer(request):
         form = AnswerForm()
     return render(request, 'answer_form.html', {
         'form': form,
+        })
+
+def question_details(request, id):
+    question = get_object_or_404(Question, id=id)
+    if request.method =="POST":
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save()
+            url = question.get_url()
+            return HttpResponseRedirect(url)
+        else:
+            return HttpResponse('OK')
+    else:
+        form = AnswerForm(initial={'question': question_id})
+        answers = Answer.objects.filter(question=question).all()
+        return render(request, 'question_details.html',{
+            'question': question,
+            'answers': answers,
+            'form': form
         })

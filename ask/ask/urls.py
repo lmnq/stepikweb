@@ -23,7 +23,6 @@ urlpatterns = [
     url(r'^signup', test),
     url(r'^question/(?P<id>\d+)/', question_details, name='question_details'),
     url(r'^ask/', ask, name='ask'),
-    url(r'^answer/.*$', answer, name='answer'),
     url(r'^popular/', popular, name='popular'),
     url(r'^new/', test)
 ]

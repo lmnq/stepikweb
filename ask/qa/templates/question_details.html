@@ -1,5 +1,27 @@
-<h1>{{question.title}}</h1>
-<h2>{{question.text}}</h2>
-{% for answer in answers %}
-	<p>{{ answer.text }}</p>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ question }}</title>
+</head>
+<body>
+    <h1>{{ question }}</h1>
+    <div>{{ question.text }}</div>
+    <hr>
+    <ul>
+    {% for answer in question.answer_set.all %}
+        <li>{{ answer }}</li>
+    {% endfor %}
+    </ul>
+    <hr>
+    <form method="post" action="{{ question.get_url }}">
+        <fieldset>
+{% csrf_token %}
+{{ form.as_p }}
+        </fieldset>
+        <button type="submit">Ответить</button>
+    </form>
+    <hr>
+    <div><a href="/ask/">Ask a new question</a></div>
+</body>
+</html> 
