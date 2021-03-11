@@ -67,6 +67,7 @@ def ask(request):
     if request.method == "POST":
         form = AskForm(request.POST)
         if form.is_valid():
+	    form._user = request.user
             question = form.save()
             url = question.get_url()
             return HttpResponseRedirect(url)
@@ -74,6 +75,8 @@ def ask(request):
         form = AskForm()
     return render(request, 'ask_form.html', {
         'form': form,
+	'user': request.user,
+	'session': request.session,
         })
 
 def answer(request):
@@ -94,16 +97,17 @@ def question_details(request, id):
     if request.method =="POST":
         form = AnswerForm(request.POST)
         if form.is_valid():
+	    form._user = request.user
             answer = form.save()
             url = question.get_url()
             return HttpResponseRedirect(url)
-        else:
-            return HttpResponse('OK')
     else:
-        form = AnswerForm(initial={'question': question_id})
-        answers = Answer.objects.filter(question=question).all()
-        return render(request, 'question_details.html',{
+        form = AnswerForm(initial={'question': question.id})
+        #answers = Answer.objects.filter(question=question).all()
+        return render(request, 'question_details.html', {
             'question': question,
-            'answers': answers,
-            'form': form
+            #'answers': answers,
+            'form': form,
+	    'user': request.user,
+	    'session': request.session,
         })
