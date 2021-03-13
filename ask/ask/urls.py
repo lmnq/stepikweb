@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^$', index, name='index'),
     url(r'^login/', test),
     url(r'^signup', test),
-    url(r'^question/' include('qa.urls')),
+    url(r'^question/', include('qa.urls')),
     url(r'^ask/', ask, name='ask'),
     url(r'^popular/', popular, name='popular'),
     url(r'^new/', test)
