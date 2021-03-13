@@ -82,8 +82,8 @@ def question_details(request, id):
     else:
         form = AnswerForm(initial={'question': question.id})
     return render(request, 'question_details.html', {
-            'question': question,
-            'form': form,
-	    'user': request.user,
-	    'session': request.session,
+        'question': question,
+        'form': form,
+	'user': request.user,
+	'session': request.session,
         })
