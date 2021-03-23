@@ -1,19 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>SignUp</title>
-</head>
-<body>
-    <form method="post" action="/signup/">
-        <fieldset>
-{% csrf_token %}
-{{ form.as_p }}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Signup </title>   
+    </head>
+
+    <body>
+      {% for e in form.non_fields.error %}
+         <div> {{ e }} </div>
+      {% endfor %}      
+      <form method="post" action="/signup/">
+        {% csrf_token %}
+        <fieldset> 
+            {% for field in form %} 
+             <div>
+               <label> {{ field.label }} </label>
+               <div> {{ field }} </div>
+             </div>
+            {% endfor %}
         </fieldset>
-        <button type="submit">Зарегистрироваться</button>
-    </form>
-    <div>User: {{ user }}</div>
-    <div>Session: {{ session }}</div>
-    <div><a href="/">Return to main page</a></div>
-</body>
+        <div>
+           <button type="submit"> Save </button>
+        </div> 
+      </form>
+    </body>
 </html>
