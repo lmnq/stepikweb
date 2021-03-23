@@ -4,9 +4,10 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_GET
 from qa.models import Answer, Question
-from qa.forms import AskForm, AnswerForm
+from qa.forms import AskForm, AnswerForm, SignupForm, LoginForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 
 def test(request, *args, **kwargs):
     return HttpResponse('OK')
@@ -87,3 +88,33 @@ def question_details(request, id):
 	'user': request.user,
 	'session': request.session,
         })
+
+def signup(request):
+    if request.method == 'POST':
+	form = SignupForm(request.POST)
+	if form.is_valid():
+	    user = form.save()
+	    if user is not None:
+		login(request, user)
+		return HttpResponseRedirect('/')
+    form = SignupForm()
+    return render(request, 'signup.html', {
+	'form': form,
+	'user': request.user,
+	'session': request.session,
+	})
+
+def login(request):
+    if request.method == 'POST':
+	form = LoginForm(request.POST)
+	if form.is_valid():
+	    user = form.save()
+	    if user is not None:
+		login(request, user)
+		return HttpResponseRedirect('/')
+    form = LoginForm()
+    return render(request, 'login.html', {
+	'form': form,
+	'user': request.user,
+	'session': request.session,
+	})
