@@ -69,7 +69,7 @@ class SignupForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    username = forms.Charfield(max_length=100)
+    username = forms.CharField(max_length=100)
     password = forms.CharField(widget=forms.PasswordInput)
 
     def clean_username(self):
