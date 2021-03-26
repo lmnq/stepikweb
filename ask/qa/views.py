@@ -90,31 +90,39 @@ def question_details(request, id):
         })
 
 def signup(request):
-    if request.method == 'POST':
-	form = SignupForm(request.POST)
-	if form.is_valid():
-	    user = form.save()
-	    if user is not None:
-		login(request, user)
-		return HttpResponseRedirect('/')
-    form = SignupForm()
-    return render(request, 'signup.html', {
-	'form': form,
-	'user': request.user,
-	'session': request.session,
-	})
+    if request.method == "POST":
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data["username"]
+            password = form.raw_passeord
+            user = authenticate(username=username, password=password)
+            print(type(user))
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+            return HttpResponseRedirect('/')
+    else:
+        form = SignupForm()
+    return render(request, 'signup.html', {'form': form,
+                                           'user': request.user,
+                                           'session': request.session, })
 
-def login(request):
-    if request.method == 'POST':
-	form = LoginForm(request.POST)
-	if form.is_valid():
-	    user = form.save()
-	    if user is not None:
-		login(request, user)
-		return HttpResponseRedirect('/')
-    form = LoginForm()
-    return render(request, 'login.html', {
-	'form': form,
-	'user': request.user,
-	'session': request.session,
-	})
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            print(username, password)
+            user = authenticate(username=username, password=password)
+            print(type(user))
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+            return HttpResponseRedirect('/')
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form,
+                                          'user': request.user,
+                                          'session': request.session, })

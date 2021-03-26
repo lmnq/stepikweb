@@ -3,7 +3,7 @@ from qa.models import Question, Answer
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-
+from django.contrib.auth.hashers import make_password
 
 class AskForm(forms.Form):
     title = forms.CharField(max_length=100)
@@ -39,51 +39,62 @@ class AnswerForm(forms.Form):
         return answer
 
 class SignupForm(forms.Form):
-    username = forms.CharField(max_length=100)
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(max_length=100, required=False)
+    email = forms.EmailField(required=False)
+    password = forms.CharField(widget=forms.PasswordInput, required=False)
 
     def clean_username(self):
-	username = self.cleaned_data['username']
-	if username.strip() == '':
-	    raise forms.ValidationError('Username is empty')
-	return username
+        username = self.cleaned_data.get('username')
+        if not username:
+            raise forms.ValidationError('Не задано имя пользователя')
+        try:
+            User.objects.get(username=username)
+            raise forms.ValidationError('Такой пользователь уже существует')
+        except User.DoesNotExist:
+            pass
+        return username
 
     def clean_email(self):
-	email = self.cleaned_data['email']
-	if email.strip() == '':
-	    raise forms.ValidationError('Email is empty')
-	return email
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError('Не указан адрес электронной почты')
+        return email
 
     def clean_password(self):
-	password = self.cleaned_data['password']
-	if password.strip() == '':
-	    raise forms.ValidationError('Password is empty')
-	return password
+        password = self.cleaned_data.get('password')
+        if not password:
+            raise forms.ValidationError('Не указан пароль')
+        self.raw_passeord = password
+        return make_password(password)
 
     def save(self):
-	user = User.objects.create_user(**self.cleaned_data)
-	user.save()
-	auth = authenticate(**self.cleaned_data)
-	return auth
+        user = User(**self.cleaned_data)
+        user.save()
+        return user
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=100)
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(max_length=100, required=False)
+    password = forms.CharField(widget=forms.PasswordInput, required=False)
 
     def clean_username(self):
-        username = self.cleaned_data['username']
-        if username.strip() == '':
-            raise forms.ValidationError('Username is empty') 
+        username = self.cleaned_data.get('username')
+        if not username:
+            raise forms.ValidationError('Не задано имя пользователя')
         return username
 
     def clean_password(self):
-        password = self.cleaned_data['password']
-        if password.strip() == '':
-            raise forms.ValidationError('Password is empty')
+        password = self.cleaned_data.get('password')
+        if not password:
+            raise forms.ValidationError('Не указан пароль')
         return password
 
-    def save(self):
-	auth = authenticate(**self.cleaned_data)
-	return auth
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise forms.ValidationError('Неверное имя пользователя или пароль1')
+        if not user.check_password(password):
+            raise forms.ValidationError('Неверное имя пользователя или пароль2')
