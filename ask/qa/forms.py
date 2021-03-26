@@ -46,10 +46,10 @@ class SignupForm(forms.Form):
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if not username:
-            raise forms.ValidationError('Не задано имя пользователя')
+            raise forms.ValidationError('failed')
         try:
             User.objects.get(username=username)
-            raise forms.ValidationError('Такой пользователь уже существует')
+            raise forms.ValidationError('failed')
         except User.DoesNotExist:
             pass
         return username
@@ -57,13 +57,13 @@ class SignupForm(forms.Form):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if not email:
-            raise forms.ValidationError('Не указан адрес электронной почты')
+            raise forms.ValidationError('failed')
         return email
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
         if not password:
-            raise forms.ValidationError('Не указан пароль')
+            raise forms.ValidationError('failed')
         self.raw_passeord = password
         return make_password(password)
 
@@ -80,13 +80,13 @@ class LoginForm(forms.Form):
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if not username:
-            raise forms.ValidationError('Не задано имя пользователя')
+            raise forms.ValidationError('failed')
         return username
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
         if not password:
-            raise forms.ValidationError('Не указан пароль')
+            raise forms.ValidationError('failed')
         return password
 
     def clean(self):
@@ -95,6 +95,6 @@ class LoginForm(forms.Form):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            raise forms.ValidationError('Неверное имя пользователя или пароль1')
+            raise forms.ValidationError('failed')
         if not user.check_password(password):
-            raise forms.ValidationError('Неверное имя пользователя или пароль2')
+            raise forms.ValidationError('failed')
